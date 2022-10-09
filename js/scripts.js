@@ -4,14 +4,6 @@
     const productsData = await fetch('https://fakestoreapi.com/products')
     const products = await productsData.json()
     cardConntenedor.innerHTML = ""
-    const head = document.createElement("div")
-    head.classList.add("titulos")
-    head.innerHTML = `    
-    <h1 class="titulo-principal">Tienda de Ropa Online</h1>
-    <p class="texto-postitulo">Bienvenido a nuestra tienda de ropa online con articulos exclusivos!</p>
-    <h2 class="titulo-secundario">Catalogo de Productos</h2>
-    `
-    titleHead.appendChild(head)
     displayProducts(products)
 })();
 
@@ -97,11 +89,25 @@ function displayProducts(products) {
             const mostrarProductos = document.createElement("div")
             mostrarProductos.classList.add("card")
             mostrarProductos.innerHTML = `
-            <img class="card__img" src="${element.image}" alt="" />
-            <h3 class="card__titulo">${element.title}</h3>
-        <p class="card__descripcion">${element.description}</p>
-        <p class="card__precio">$ ${element.price}</p>
-        <button id="${element.id}" class="card__btn">Agregar</button>
+            <div class="col mb-5">
+            <div class="card h-100">
+              <!-- Product image-->
+              <img class="card-img-top-" src="${element.image}" alt="..." />
+              <!-- Product details-->
+              <div class="card-body p-4">
+                <div class="text-center">
+                  <!-- Product name-->
+                  <h5 class="fw-bolder">${element.title}</h5>
+                  <!-- Product price-->
+                  ${element.price}
+                </div>
+              </div>
+              <!-- Product actions-->
+              <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#" id="${element.id}">Add to cart</a></div>
+              </div>
+            </div>
+          </div>
         `
         cardConntenedor.appendChild(mostrarProductos)
     
@@ -166,11 +172,7 @@ function displayProducts(products) {
     //Se crea la funcion encargada de actualizar el icono del carrito de compras
 
     const actualizarCarrito = () => {
-        cart.innerHTML = ""
-        const span = document.createElement("span")
-        span.classList.add("counter")
-        span.innerHTML = `${itemsCarrito}`
-        cart.appendChild(span)
+        cart.innerHTML = `${itemsCarrito}`
     }
 
 }
@@ -273,27 +275,23 @@ checkOut.addEventListener("click", () => {
 menCategory.onclick = async () => {
 const productsData = await fetch(`https://fakestoreapi.com/products/category/men's clothing`)
 const products = await productsData.json()
-titleHead.innerHTML = ""
 displayProducts(products)
 }
 
 womenCategory.onclick = async () => {
     const productsData = await fetch(`https://fakestoreapi.com/products/category/women's clothing`)
     const products = await productsData.json()
-    titleHead.innerHTML = ""
     displayProducts(products)
 }
 
 jeweleryCategory.onclick = async () => {
     const productsData = await fetch(`https://fakestoreapi.com/products/category/jewelery`)
     const products = await productsData.json()
-    titleHead.innerHTML = ""
     displayProducts(products)
 }
 
 electronicsCategory.onclick = async () => {
     const productsData = await fetch(`https://fakestoreapi.com/products/category/electronics`)
     const products = await productsData.json()
-    titleHead.innerHTML = ""
     displayProducts(products)
 }
