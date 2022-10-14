@@ -223,7 +223,6 @@ checkOut.addEventListener("click", () => {
 
             if (result.isConfirmed) {
                 const reciboCompra = () => {
-                    titleHead.innerHTML = ""
                     cardConntenedor.innerHTML = ""
                     facturaConntenedor.innerHTML = ""
                     const articulosCarrito = document.createElement("h2")
@@ -234,16 +233,112 @@ checkOut.addEventListener("click", () => {
                         const div = document.createElement("div")
                         div.classList.add("factura")
                         div.innerHTML = `
-                        <img src="${producto.image}" alt="producto" class="factura__img">
-                        <h3 class="factura-titulo">${producto.title}</h3>
-                        <p id="contador" class="factura__cantidad">Cantidad: ${producto.cart}</p>
-                        <p class="factura__precio">Valor Unidad: $ ${producto.price}</p>
-                        `
+                        <div class="card rounded-3 mb-4">
+                        <div class="card-body p-4">
+                          <div class="row d-flex justify-content-between align-items-center">
+                            <div class="col-md-2 col-lg-2 col-xl-2">
+                              <img
+                                src="${producto.image}"
+                                class="img-fluid rounded-3"
+                                alt="..."
+                              />
+                            </div>
+                            <div class="col-md-3 col-lg-3 col-xl-3">
+                              <p class="lead fw-normal mb-2">${producto.title}</p>
+                              <p><span class="text-muted">Size: </span>M <span class="text-muted">Color: </span>Grey</p>
+                            </div>
+                            <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                              <button class="btn btn-link px-2" id="${producto.id}" onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                                <i class="fas fa-minus"></i>
+                              </button>
+          
+                              <input id="form1" min="0" name="quantity" value="${producto.cart}" type="number" class="form-control form-control-sm" />
+          
+                              <button class="btn btn-link px-2" id="step-up" onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                                <i class="fas fa-plus"></i>
+                              </button>
+                            </div>
+                            <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                              <h5 class="mb-0">$${producto.price}*${producto.cart}</h5>
+                            </div>
+                            <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+                              <a href="#!" class="text-danger"><i class="fas fa-trash fa-lg"></i></a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    `
+                        // div.innerHTML = `
+                        // <img src="${producto.image}" alt="producto" class="factura__img">
+                        // <h3 class="factura-titulo">${producto.title}</h3>
+                        // <p id="contador" class="factura__cantidad">Cantidad: ${producto.cart}</p>
+                        // <p class="factura__precio">Valor Unidad: $ ${producto.price}</p>
+                        // `
                         facturaConntenedor.appendChild(div)
                     })
+
+                    const agregarItem = document.getElementById(producto.id)
+                    agregarItem.addEventListener("click", () => {
+                        agregarCarrito(producto.id)
+                    })
+
+                    const agregarCarrito = (productoId) => {
+                      let productoSeleccionado = products.find((p) => p.id === productoId)
+                      if (carrito.find((p)=> p.id === productoSeleccionado.id)){
+                          productoSeleccionado.cart++ // Sugar Syntax Optimizacion ++
+                          totalCompra = totalCompra + productoSeleccionado.price
+                          itemsCarrito= carrito.reduce((acumulator, actual) => {
+                              return acumulator + actual.cart;
+                          }, 0)
+                          // se envian los productos del carrito y el valor total de compra al storage para poder utilizarlos en la pagina del checkout
+                          localStorage.setItem('carritoStorage', JSON.stringify(carrito))
+                          localStorage.setItem('totalCompraStorage', JSON.stringify(totalCompra))
+                          actualizarCarrito()
+                          // Se agrega notificacion al agregar producto
+                          Swal.fire({
+                          text: 'Agregaste un producto al carrito',
+                          timer: 1000,
+                          showConfirmButton:false,
+                          icon: 'success',
+                          position: "top-end",
+                          customClass: {
+                              popup: "swal-popup"
+                          }
+                          })
+                      }   
+                      
+                      else {
+                          carrito.push(productoSeleccionado)
+                          totalCompra = totalCompra + productoSeleccionado.price
+                          productoSeleccionado.cart = 1
+                          itemsCarrito= carrito.reduce((acumulator, actual) => {
+                              return acumulator + actual.cart;
+                          }, 0)
+                          // se envian los productos del carrito y el valor total de compra al storage para poder utilizarlos en la pagina del checkout
+                          localStorage.setItem('carritoStorage', JSON.stringify(carrito))
+                          localStorage.setItem('totalCompraStorage', JSON.stringify(totalCompra))
+                          actualizarCarrito( )
+                          // Se agrega notificacion al agregar producto
+                          Swal.fire({
+                              text: 'Agregaste un producto al carrito',
+                              timer: 1000,
+                              showConfirmButton:false,
+                              icon: 'success',
+                              position: "top-end",
+                              customClass: {
+                                  popup: "swal-popup"
+                              }
+                          })
+                      }
+                  }
+              
+                  //Se crea la funcion encargada de actualizar el icono del carrito de compras
+              
+                  const actualizarCarrito = () => {
+                      cart.innerHTML = `${itemsCarrito}`
+                  }
                     
                     // se calcula y muestra el total de la compra. 
-                    
                     let impuestos = totalCompra * 0.19
                     let envio = Math.floor(Math.random()*20)
                     let granTotal = totalCompra + impuestos + envio
