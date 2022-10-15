@@ -1,12 +1,12 @@
 const cardContainer = document.getElementById("card-container");
 
-let storeItems =[]; 
-let cart = [];
+let storeItems = [];
+let cart = JSON.parse(localStorage.getItem("cartMemory")) || [];
 
-async function fetchApi () {
+async function fetchApi() {
     const dataApi = await fetch('https://fakestoreapi.com/products')
     const dataJason = await dataApi.json()
-    dataJason.map((element)=> {
+    dataJason.map((element) => {
         storeItems.push(element)
     })
     showProducts();
@@ -14,11 +14,11 @@ async function fetchApi () {
 
 fetchApi();
 
-
 let showProducts = () => {
-    cardContainer.innerHTML = storeItems.map((element)=> {
-        let {image, title, price, id} = element
-       return `
+    cardContainer.innerHTML = storeItems.map((element) => {
+        let { image, title, price, id } = element;
+        let search = cart.find((element) => element.id === id) || [];
+        return `
             <div class="col mb-5" id = "product-id-${id}">
             <div class="card h-100">
               <!-- Product image-->
@@ -29,15 +29,16 @@ let showProducts = () => {
                   <!-- Product name-->
                   <h5 class="fw-bolder">${title}</h5>
                   <!-- Product price-->
-                  ${price}
+                  $${price}
                 </div>
               </div>
               <!-- Product actions-->
               <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#" id="add">Add to cart</a></div>
-                <i class="bi bi-plus-lg" onclick="addProduct(${id})"></i>
-                <div class="quantity" id="${id}">0</div>
+                <div class="d-flex justify-content-around">
                 <i class="bi bi-dash-lg" onclick="removeProduct(${id})"></i>
+                <div class="quantity" id="${id}">${search.quantity === undefined ? 0 : search.quantity}</div>
+                <i class="bi bi-plus-lg" onclick="addProduct(${id})"></i>
+                </div>
               </div>
             </div>
           </div>
@@ -46,7 +47,7 @@ let showProducts = () => {
 }
 
 let addProduct = (id) => {
-    let selectedProduct = storeItems.find((element)=> element.id === id)
+    let selectedProduct = storeItems.find((element) => element.id === id)
     let search = cart.find((element) => element.id === selectedProduct.id)
     if (search === undefined) {
         cart.push({
@@ -56,20 +57,22 @@ let addProduct = (id) => {
     } else {
         search.quantity += 1;
     }
-    console.log(cart)
     update(selectedProduct.id);
+    localStorage.setItem("cartMemory", JSON.stringify(cart))
 };
 
 let removeProduct = (id) => {
-    let selectedProduct = storeItems.find((element)=> element.id === id)
+    let selectedProduct = storeItems.find((element) => element.id === id)
     let search = cart.find((element) => element.id === selectedProduct.id)
-    if (search.quantity === 0) {
+    if (search === undefined) return
+    else if (search.quantity === 0) {
         return;
     } else {
         search.quantity -= 1;
     }
-    console.log(cart)
     update(selectedProduct.id);
+    cart = cart.filter((element) => element.quantity !== 0);
+    localStorage.setItem("cartMemory", JSON.stringify(cart));
 };
 
 let update = (id) => {
@@ -78,8 +81,9 @@ let update = (id) => {
     cartCount();
 };
 
-
 let cartCount = () => {
-let cartCounter = document.getElementById("cart-count");
-cartCounter.innerHTML = cart.map((element)=> element.quantity).reduce((a,b) => a + b, 0);
+    let cartCounter = document.getElementById("cart-count");
+    cartCounter.innerHTML = cart.map((element) => element.quantity).reduce((a, b) => a + b, 0);
 }
+
+cartCount();

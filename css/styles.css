@@ -89,6 +89,17 @@ body {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
+i {
+  cursor: pointer;
+}
+
+a { 
+  text-decoration: none;
+}
+
+a, span {
+  text-decoration: none;
+}
 
 hr {
   margin: 1rem 0;
