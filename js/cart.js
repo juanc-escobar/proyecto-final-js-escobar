@@ -41,14 +41,14 @@ let showCart = () => {
               <p><span class="text-muted">Size: </span>M <span class="text-muted">Color: </span>Grey</p>
             </div>
             <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-              <button class="btn btn-link px-2" onclick="addProduct(${id})">
-                <i class="fas fa-minus"></i>
+              <button class="btn btn-link px-2" onclick="removeProduct(${id})">
+                <i class="bi bi-dash-lg"></i>
               </button>
 
               <input id="${id}" min="0" name="quantity" value="${quantity}" type="number" class="form-control form-control-sm" />
 
-              <button class="btn btn-link px-2" onclick="removeProduct(${id})">
-                <i class="fas fa-plus"></i>
+              <button class="btn btn-link px-2" onclick="addProduct(${id})">
+                <i class="bi bi-plus-lg"></i>
               </button>
             </div>
             <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
@@ -131,9 +131,15 @@ let totalPrice = () => {
       return quantity * search.price;
     }).reduce((a,b) => a + b, 0);
     total.innerHTML = `
-    <h2>Total Price: $ ${price}</h2>
-    <button class="btn btn-outline-dark mt-auto">Checkout</button>
-    <button class="btn btn-outline-dark mt-auto" onclick="clearCart()">Clear Cart</button>
+    <div class="card">
+    <div class="card-body row d-flex justify-content-center align-items-center text-center">
+      <h2>Total Price: $ ${price}</h2>
+    </div>
+    <div class="container d-flex justify-content-center align-items-center mb-4">
+    <button class="btn btn-outline-dark mt-auto btn-lg m-3" onclick="clearCart()">Clear Cart</button>
+      <button type="button" class="btn btn-warning btn-block btn-lg m-3">Checkout</button>
+    </div>
+  </div>
     `
   } else return
 };
@@ -146,3 +152,4 @@ let clearCart = () => {
   cartCount();
   localStorage.setItem("cartMemory", JSON.stringify(cart));
 }
+

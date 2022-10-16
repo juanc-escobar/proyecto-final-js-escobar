@@ -22,7 +22,7 @@ let showProducts = () => {
             <div class="col mb-5" id = "product-id-${id}">
             <div class="card h-100">
               <!-- Product image-->
-              <img class="card-img-top-" src="${image}" alt="..." />
+              <img class="card-img-top-" height="300px" src="${image}" alt="..." />
               <!-- Product details-->
               <div class="card-body p-4">
                 <div class="text-center">
@@ -87,3 +87,48 @@ let cartCount = () => {
 }
 
 cartCount();
+
+const menCategory = document.getElementById("men")
+const womenCategory = document.getElementById("women")
+const jeweleryCategory = document.getElementById("jewelery")
+const electronicsCategory = document.getElementById("electronics")
+
+menCategory.onclick = async () => {
+    const productsData = await fetch(`https://fakestoreapi.com/products/category/men's clothing`)
+    const products = await productsData.json()
+    storeItems = [];
+    products.map((element) => {
+        storeItems.push(element)
+    })
+    showProducts(products)
+    }
+    
+    womenCategory.onclick = async () => {
+        const productsData = await fetch(`https://fakestoreapi.com/products/category/women's clothing`)
+        const products = await productsData.json()
+        storeItems = [];
+        products.map((element) => {
+            storeItems.push(element)
+        })
+        showProducts(products)
+    }
+    
+    jeweleryCategory.onclick = async () => {
+        const productsData = await fetch(`https://fakestoreapi.com/products/category/jewelery`)
+        const products = await productsData.json()
+        storeItems = [];
+        products.map((element) => {
+            storeItems.push(element)
+        })
+        showProducts(products)
+    }
+    
+    electronicsCategory.onclick = async () => {
+        const productsData = await fetch(`https://fakestoreapi.com/products/category/electronics`)
+        const products = await productsData.json()
+        storeItems = [];
+        products.map((element) => {
+            storeItems.push(element)
+        })
+        showProducts(products)
+    }
