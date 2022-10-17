@@ -20,30 +20,35 @@ let showProducts = () => {
         let search = cart.find((element) => element.id === id) || [];
         return `
             <div class="col mb-5" id = "product-id-${id}">
-            <div class="card h-100">
-              <!-- Product image-->
-              <img class="card-img-top-" height="300px" src="${image}" alt="..." />
-              <!-- Product details-->
-              <div class="card-body p-4">
-                <div class="text-center">
-                  <!-- Product name-->
-                  <h5 class="fw-bolder">${title}</h5>
-                  <!-- Product price-->
-                  $${price}
+                <div class="card h-100">
+                    <!-- Product image-->
+                    <img class="card-img-top- img-fluid rounded-3" height="300px" src="${image}" alt="..." />
+                    <!-- Product details-->
+                    <div class="card-body p-4">
+                        <div class="text-center">
+                            <!-- Product name-->
+                            <h5 class="fw-bolder">${title}</h5>
+                            <!-- Product price-->
+                            $${price}
+                        </div>
+                    </div>
+                    <!-- Product actions-->
+                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                        <div class="d-flex justify-content-around">
+                            <button class="btn btn-outline-dark px-2" onclick="removeProduct(${id})">
+                                <i class="bi bi-dash-lg"></i>
+                            </button>
+                            <div class="quantity" id="${id}">${search.quantity === undefined ? 0 : search.quantity}</div>
+                            <button class="btn btn-outline-dark px-2" onclick="addProduct(${id})">
+                                <i class="bi bi-plus-lg"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <!-- Product actions-->
-              <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                <div class="d-flex justify-content-around">
-                <i class="bi bi-dash-lg" onclick="removeProduct(${id})"></i>
-                <div class="quantity" id="${id}">${search.quantity === undefined ? 0 : search.quantity}</div>
-                <i class="bi bi-plus-lg" onclick="addProduct(${id})"></i>
-                </div>
-              </div>
             </div>
-          </div>
         `
     }).join("")
+
 }
 
 let addProduct = (id) => {
@@ -87,48 +92,3 @@ let cartCount = () => {
 }
 
 cartCount();
-
-const menCategory = document.getElementById("men")
-const womenCategory = document.getElementById("women")
-const jeweleryCategory = document.getElementById("jewelery")
-const electronicsCategory = document.getElementById("electronics")
-
-menCategory.onclick = async () => {
-    const productsData = await fetch(`https://fakestoreapi.com/products/category/men's clothing`)
-    const products = await productsData.json()
-    storeItems = [];
-    products.map((element) => {
-        storeItems.push(element)
-    })
-    showProducts(products)
-    }
-    
-    womenCategory.onclick = async () => {
-        const productsData = await fetch(`https://fakestoreapi.com/products/category/women's clothing`)
-        const products = await productsData.json()
-        storeItems = [];
-        products.map((element) => {
-            storeItems.push(element)
-        })
-        showProducts(products)
-    }
-    
-    jeweleryCategory.onclick = async () => {
-        const productsData = await fetch(`https://fakestoreapi.com/products/category/jewelery`)
-        const products = await productsData.json()
-        storeItems = [];
-        products.map((element) => {
-            storeItems.push(element)
-        })
-        showProducts(products)
-    }
-    
-    electronicsCategory.onclick = async () => {
-        const productsData = await fetch(`https://fakestoreapi.com/products/category/electronics`)
-        const products = await productsData.json()
-        storeItems = [];
-        products.map((element) => {
-            storeItems.push(element)
-        })
-        showProducts(products)
-    }

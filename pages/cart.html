@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-  <html lang="en">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -19,7 +19,7 @@
     <!-- Navigation-->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container px-4 px-lg-5">
-        <a class="navbar-brand" href="../index.html"><img src="../assets/Logo.png" alt="logo" width="200px"></a>
+        <a class="navbar-brand" href="../index.html"><img src="../assets/Logo.png" alt="logo" width="200px" /></a>
         <button
           class="navbar-toggler"
           type="button"
@@ -33,12 +33,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-            <li class="nav-item" ><a class="nav-link" id="men" >Men's clothing</a></li>
-            <li class="nav-item" ><a class="nav-link" id="women">Women's clothing</a></li>
-            <li class="nav-item" ><a class="nav-link" id="jewelery">Jewelery</a></li>
-            <li class="nav-item" ><a class="nav-link" id="electronics">Electronics</a></li>
-            <li class="nav-item dropdown">
-            </li>
+            <li class="nav-item dropdown"></li>
           </ul>
           <a href="./cart.html">
             <form class="d-flex">
@@ -61,14 +56,16 @@
               <h3 class="fw-normal mb-0 text-black">Shopping Cart</h3>
               <div>
                 <p class="mb-0">
-                  <span class="text-muted">Sort by:</span> <a href="#!" class="text-body">price <i class="fas fa-angle-down mt-1"></i></a>
+                  <span class="text-muted">Sort by:</span>
+                  <a href="#!" class="text-body" onclick="sortPrice()">price <i class="fas fa-angle-down mt-1"></i></a>
                 </p>
               </div>
             </div>
-
             <div id="shopping-cart"></div>
             <div id="total-price"></div>
-
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Footer-->
