@@ -59,8 +59,10 @@ let addProduct = (id) => {
             id: selectedProduct.id,
             quantity: 1,
         });
+        addMessage();
     } else {
         search.quantity += 1;
+        addMessage();
     }
     update(selectedProduct.id);
     localStorage.setItem("cartMemory", JSON.stringify(cart))
@@ -69,11 +71,12 @@ let addProduct = (id) => {
 let removeProduct = (id) => {
     let selectedProduct = storeItems.find((element) => element.id === id)
     let search = cart.find((element) => element.id === selectedProduct.id)
-    if (search === undefined) return
+    if (search === undefined) return  zeroMessage();
     else if (search.quantity === 0) {
-        return;
+         return
     } else {
         search.quantity -= 1;
+        removeMessage();
     }
     update(selectedProduct.id);
     cart = cart.filter((element) => element.quantity !== 0);
@@ -92,3 +95,90 @@ let cartCount = () => {
 }
 
 cartCount();
+
+const menCategory = document.getElementById("men")
+const womenCategory = document.getElementById("women")
+const jeweleryCategory = document.getElementById("jewelery")
+const electronicsCategory = document.getElementById("electronics")
+
+menCategory.onclick = async () => {
+    const productsData = await fetch(`https://fakestoreapi.com/products/category/men's clothing`)
+    const products = await productsData.json()
+    storeItems = [];
+    products.map((element) => {
+        storeItems.push(element)
+    })
+    showProducts(products)
+    }
+    
+    womenCategory.onclick = async () => {
+        const productsData = await fetch(`https://fakestoreapi.com/products/category/women's clothing`)
+        const products = await productsData.json()
+        storeItems = [];
+        products.map((element) => {
+            storeItems.push(element)
+        })
+        showProducts(products)
+    }
+    
+    jeweleryCategory.onclick = async () => {
+        const productsData = await fetch(`https://fakestoreapi.com/products/category/jewelery`)
+        const products = await productsData.json()
+        storeItems = [];
+        products.map((element) => {
+            storeItems.push(element)
+        })
+        showProducts(products)
+    }
+    
+    electronicsCategory.onclick = async () => {
+        const productsData = await fetch(`https://fakestoreapi.com/products/category/electronics`)
+        const products = await productsData.json()
+        storeItems = [];
+        products.map((element) => {
+            storeItems.push(element)
+        })
+        showProducts(products)
+    }
+
+
+    let addMessage = () => {
+        Swal.fire({
+            text: 'One unit of this item is now on your shopping cart',
+            timer: 800,
+            showConfirmButton:false,
+            icon: 'success',
+            position: "top-end",
+            customClass: {
+                popup: "swal-popup"
+            }
+        })
+    }
+
+    let removeMessage = () => {
+        Swal.fire({
+            text: 'One unit of this item has been removed from shopping cart',
+            timer: 800,
+            showConfirmButton:false,
+            icon: 'warning',
+            position: "top-end",
+            customClass: {
+                popup: "swal-popup"
+            }
+        })
+    }
+
+    let zeroMessage = () => {
+        Swal.fire({
+            text: 'This item is not in your cart',
+            timer: 800,
+            showConfirmButton:false,
+            icon: 'error',
+            position: "top-end",
+            customClass: {
+                popup: "swal-popup"
+            }
+        })
+    }
+
+   

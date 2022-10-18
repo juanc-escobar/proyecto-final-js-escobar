@@ -36,10 +36,10 @@ console.log(typeof storeItems[0])
 let showCart = () => {
   if(cart.lenght !==0) {
     shoppingCart.innerHTML = cart.map((element)=> {
-        let {quantity, id} = element;
-        let search = storeItems.find((element) => element.id === id) || [];
-        return `
-        <div class="card rounded-3 mb-4">
+      let {quantity, id} = element;
+      let search = storeItems.find((element) => element.id === id) || [];
+      return `
+      <div class="card rounded-3 mb-4">
         <div class="card-body p-4">
           <div class="row d-flex justify-content-between align-items-center">
             <div class="col-md-2 col-lg-2 col-xl-2">
@@ -57,9 +57,7 @@ let showCart = () => {
               <button class="btn btn-link px-2" onclick="removeProduct(${id})">
                 <i class="bi bi-dash-lg"></i>
               </button>
-
-              <input id="${id}" min="0" name="quantity" value="${quantity}" type="number" class="form-control form-control-sm" />
-
+              <p id="${id}" class="form-control form-control-sm mt-3"/>${quantity}</p>
               <button class="btn btn-link px-2" onclick="addProduct(${id})">
                 <i class="bi bi-plus-lg"></i>
               </button>
@@ -80,11 +78,17 @@ let showCart = () => {
   } else {
       shoppingCart.innerHTML= ""
       total.innerHTML = ""
-      shoppingCart.innerHTML= `
-      <h2>Cart is Empty</h2>
-      <a href="../testindex.html">
-        <button class="btn btn-outline-dark mt-auto">Home</button>
-      </a>
+      total.innerHTML= `
+      <div class="card">
+        <div class="card-body row d-flex justify-content-center align-items-center text-center">
+          <h2>Cart is Empty</h2>
+        </div>
+        <div class="container d-flex justify-content-center align-items-center mb-4">
+          <a href="../testindex.html">
+            <button class="btn btn-outline-dark mt-auto">Home</button>
+          </a>
+        </div>
+      </div>
       `
   }
 }
@@ -94,12 +98,14 @@ let addProduct = (id) => {
   let selectedProduct = storeItems.find((element)=> element.id === id)
   let search = cart.find((element) => element.id === selectedProduct.id)
   if (search === undefined) {
-      cart.push({
-          id: selectedProduct.id,
-          quantity: 1,
-      });
+    cart.push({
+        id: selectedProduct.id,
+        quantity: 1,
+    });
+    addMessage();
   } else {
       search.quantity += 1;
+      addMessage();
   }
   update(selectedProduct.id);
   showCart();
@@ -109,11 +115,12 @@ let addProduct = (id) => {
 let removeProduct = (id) => {
   let selectedProduct = storeItems.find((element)=> element.id === id)
   let search = cart.find((element) => element.id === selectedProduct.id)
-  if (search === undefined) return
+  if (search === undefined) return;
   else if (search.quantity === 0) {
       return;
   } else {
       search.quantity -= 1;
+      removeMessage();
   }
   update(selectedProduct.id);
   cart = cart.filter((element) => element.quantity !== 0);
@@ -132,6 +139,7 @@ let eliminateProduct = (id) => {
   cart = cart.filter((element) => element.id !== selectedProduct)
   showCart();
   cartCount();
+  zeroMessage()
   localStorage.setItem("cartMemory", JSON.stringify(cart));
 };
 
@@ -144,16 +152,30 @@ let totalPrice = () => {
     }).reduce((a,b) => a + b, 0);
     total.innerHTML = `
     <div class="card">
-    <div class="card-body row d-flex justify-content-center align-items-center text-center">
-      <h2>Total Price: $ ${price}</h2>
+      <div class="card-body row d-flex justify-content-center align-items-center text-center">
+        <h2>Total Price: $ ${price}</h2>
+      </div>
+      <div class="container d-flex justify-content-center align-items-center mb-4">
+        <button class="btn btn-outline-dark mt-auto btn-lg m-3" onclick="clearCart()">Clear Cart</button>
+        <button type="button" class="btn btn-warning btn-block btn-lg m-3" onclick="checkOutMessage()">Checkout</button>
+      </div>
     </div>
-    <div class="container d-flex justify-content-center align-items-center mb-4">
-    <button class="btn btn-outline-dark mt-auto btn-lg m-3" onclick="clearCart()">Clear Cart</button>
-      <button type="button" class="btn btn-warning btn-block btn-lg m-3">Checkout</button>
-    </div>
-  </div>
     `
-  } else return
+  } else {
+    total.innerHTML = ""
+    total.innerHTML= `
+    <div class="card">
+      <div class="card-body row d-flex justify-content-center align-items-center text-center">
+        <h2>Cart is Empty</h2>
+      </div>
+      <div class="container d-flex justify-content-center align-items-center mb-4">
+        <a href="../testindex.html">
+          <button class="btn btn-outline-dark mt-auto">Home</button>
+        </a>
+      </div>
+    </div>
+    `
+  }
 };
 
 totalPrice();
@@ -162,6 +184,7 @@ let clearCart = () => {
   cart = [];
   showCart();
   cartCount();
+  emptyMessage();
   localStorage.setItem("cartMemory", JSON.stringify(cart));
 }
 
@@ -172,6 +195,77 @@ console.log(storeItems)
 // let sortPrice = () => {
 
 // }
+
+
+let addMessage = () => {
+  Swal.fire({
+      text: 'One unit of this item is now on your shopping cart',
+      timer: 800,
+      showConfirmButton:false,
+      icon: 'success',
+      position: "top-end",
+      customClass: {
+          popup: "swal-popup"
+      }
+  })
+}
+
+let removeMessage = () => {
+  Swal.fire({
+      text: 'One unit of this item has been removed from shopping cart',
+      timer: 800,
+      showConfirmButton:false,
+      icon: 'warning',
+      position: "top-end",
+      customClass: {
+          popup: "swal-popup"
+      }
+  })
+}
+
+let zeroMessage = () => {
+  Swal.fire({
+      text: 'All units of this item has been removed from shopping cart',
+      timer: 800,
+      showConfirmButton:false,
+      icon: 'error',
+      position: "top-end",
+      customClass: {
+          popup: "swal-popup"
+      }
+  })
+}
+
+let emptyMessage = () => {
+  Swal.fire({
+      text: 'Your shopping cart is now empty',
+      timer: 1400,
+      showConfirmButton:false,
+      icon: 'info',
+      position: "top-end",
+      customClass: {
+          popup: "swal-popup"
+      }
+  })
+}
+
+let checkOutMessage = () => {
+  Swal.fire({
+      text: '✨Thanks for shopping with us✨',
+      timer: 2000,
+      showConfirmButton:false,
+      icon: 'success',
+      position: "top-end",
+      customClass: {
+          popup: "swal-popup"
+      }
+  })
+}
+
+
+
+
+
 
 
 // let test = [
