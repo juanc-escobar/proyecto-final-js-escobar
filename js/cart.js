@@ -1,43 +1,51 @@
-let cart = JSON.parse(localStorage.getItem("cartMemory")) || [];
-let shoppingCart = document.getElementById("shopping-cart");
-let total = document.getElementById("total-price")
-let storeItems = []; 
+// --------------------------------------------CORE LOGIC--------------------------------------------//
 
+// Declaring the cart variable that retrieves the items from memory
+let cart = JSON.parse(localStorage.getItem("cartMemory")) || [];
+console.log(cart);
+console.log(cart.lenght)
+// Declaring the store variable where all items will be stored
+let storeItems = [];
+// Access to the section where all selected cards will be displayed   
+let shoppingCart = document.getElementById("shopping-cart");
+// Access to the section where the total bill will be displayed 
+let total = document.getElementById("total-price")
+
+// Declaring a function to update the cart quantity icon
 let cartCount = () => {
-    let cartCounter = document.getElementById("cart-count");
-    cartCounter.innerHTML = cart.map((element)=> element.quantity).reduce((a,b) => a + b, 0);
+  let cartCounter = document.getElementById("cart-count");
+  cartCounter.innerHTML = cart.map((element)=> element.quantity).reduce((a,b) => a + b, 0);
 }
+
 cartCount();
 
+console.log(cart)
+
+//Declaring the function to show all products as a card.
 async function fetchApi () {
   const dataApi = await fetch('https://fakestoreapi.com/products')
   console.log(typeof dataApi);
   const dataJason = await dataApi.json()
-  console.log(typeof dataJason)
-  console.log(typeof dataJason[0])
-  console.log(typeof dataJason[0].id);
-  await Promise.all(dataJason.map((element) => {
+  dataJason.map((element) => {
     storeItems.push(element)
-}))
-  console.log(storeItems)
-  console.log(typeof storeItems)
-  console.log(typeof storeItems[0])
-  console.log(typeof storeItems[0].id);
+  })
  showCart();
+ totalPrice();
 }
 
 fetchApi();
 
-console.log(storeItems)
-console.log(typeof storeItems)
-console.log(typeof storeItems[0])
-// console.log(typeof storeItems[0].id);
-
+//Declaring the function to show all selected products as a card.
 let showCart = () => {
+  console.log(cart.lenght);
   if(cart.lenght !==0) {
+    console.log(cart.lenght)
     shoppingCart.innerHTML = cart.map((element)=> {
       let {quantity, id} = element;
       let search = storeItems.find((element) => element.id === id) || [];
+      console.log(storeItems);
+      console.log(typeof storeItems)
+      console.log(typeof storeItems[0])
       return `
       <div class="card rounded-3 mb-4">
         <div class="card-body p-4">
@@ -76,24 +84,26 @@ let showCart = () => {
     }).join("")
 
   } else {
-      shoppingCart.innerHTML= ""
-      total.innerHTML = ""
-      total.innerHTML= `
-      <div class="card">
-        <div class="card-body row d-flex justify-content-center align-items-center text-center">
-          <h2>Cart is Empty</h2>
-        </div>
-        <div class="container d-flex justify-content-center align-items-center mb-4">
-          <a href="../testindex.html">
-            <button class="btn btn-outline-dark mt-auto">Home</button>
-          </a>
-        </div>
+    shoppingCart.innerHTML= ""
+    total.innerHTML = ""
+    total.innerHTML= `
+    <div class="card">
+      <div class="card-body row d-flex justify-content-center align-items-center text-center">
+        <h2>Cart is Empty</h2>
       </div>
-      `
+      <div class="container d-flex justify-content-center align-items-center mb-4">
+        <a href="../testindex.html">
+          <button class="btn btn-outline-dark mt-auto">Home</button>
+        </a>
+      </div>
+    </div>
+    `
   }
 }
 
+showCart();
 
+// Declaring the function to add products to the cart, validate if the object exists, and then chose to increase only the quantity if it does.
 let addProduct = (id) => {
   let selectedProduct = storeItems.find((element)=> element.id === id)
   let search = cart.find((element) => element.id === selectedProduct.id)
@@ -109,9 +119,11 @@ let addProduct = (id) => {
   }
   update(selectedProduct.id);
   showCart();
+  totalPrice();
   localStorage.setItem("cartMemory", JSON.stringify(cart))
 };
 
+// Declaring the function to remove products to the cart, validate if the object exists, and then chose to decrease the quantity if it does.
 let removeProduct = (id) => {
   let selectedProduct = storeItems.find((element)=> element.id === id)
   let search = cart.find((element) => element.id === selectedProduct.id)
@@ -125,24 +137,29 @@ let removeProduct = (id) => {
   update(selectedProduct.id);
   cart = cart.filter((element) => element.quantity !== 0);
   showCart();
+  totalPrice();
   localStorage.setItem("cartMemory", JSON.stringify(cart));
 };
 
+// Declaring the function to update the DOM and show all the quantities changes 
 let update = (id) => {
   let search = cart.find((element) => element.id === id)
   document.getElementById(id).innerHTML = search.quantity;
   cartCount();
 };
 
+//Declaring the function to eliminate all quantities of a product from the cart 
 let eliminateProduct = (id) => {
   let selectedProduct = id;
   cart = cart.filter((element) => element.id !== selectedProduct)
   showCart();
+  totalPrice();
   cartCount();
   zeroMessage()
   localStorage.setItem("cartMemory", JSON.stringify(cart));
 };
 
+//Declaring the function to calculate and display the total of all cart items 
 let totalPrice = () => {
   if (cart.lenght !== 0) {   
     let price = cart.map ((element)=>{
@@ -150,44 +167,35 @@ let totalPrice = () => {
       let search = storeItems.find((y) => y.id === id) || [];
       return quantity * search.price;
     }).reduce((a,b) => a + b, 0);
-    total.innerHTML = `
-    <div class="card">
-      <div class="card-body row d-flex justify-content-center align-items-center text-center">
-        <h2>Total Price: $ ${price}</h2>
-      </div>
-      <div class="container d-flex justify-content-center align-items-center mb-4">
-        <button class="btn btn-outline-dark mt-auto btn-lg m-3" onclick="clearCart()">Clear Cart</button>
-        <button type="button" class="btn btn-warning btn-block btn-lg m-3" onclick="checkOutMessage()">Checkout</button>
-      </div>
-    </div>
-    `
-  } else {
-    total.innerHTML = ""
-    total.innerHTML= `
-    <div class="card">
-      <div class="card-body row d-flex justify-content-center align-items-center text-center">
-        <h2>Cart is Empty</h2>
-      </div>
-      <div class="container d-flex justify-content-center align-items-center mb-4">
-        <a href="../testindex.html">
-          <button class="btn btn-outline-dark mt-auto">Home</button>
-        </a>
-      </div>
-    </div>
-    `
-  }
+    console.log(price);
+    // total.innerHTML = `
+    // <div class="card">
+    //   <div class="card-body row d-flex justify-content-center align-items-center text-center">
+    //     <h2>Total Price: $ ${price}</h2>
+    //   </div>
+    //   <div class="container d-flex justify-content-center align-items-center mb-4">
+    //     <button class="btn btn-outline-dark mt-auto btn-lg m-3" onclick="clearCart()">Clear Cart</button>
+    //     <button type="button" class="btn btn-warning btn-block btn-lg m-3" onclick="checkOutMessage()">Checkout</button>
+    //   </div>
+    // </div>
+    // `
+  } 
+
 };
 
 totalPrice();
 
+//Declaring the function to empty the cart 
 let clearCart = () => {
   cart = [];
   showCart();
+  totalPrice();
   cartCount();
   emptyMessage();
   localStorage.setItem("cartMemory", JSON.stringify(cart));
 }
 
+//Declaring the function to sort the cart items by price in descending order   
 let xxx = storeItems.sort((a,b) => a.price - b.price);
 
 console.log(storeItems)
@@ -196,69 +204,70 @@ console.log(storeItems)
 
 // }
 
+//  -------------------------------------------SWEET ALERT MESSAGES--------------------------------------------//
 
 let addMessage = () => {
   Swal.fire({
-      text: 'One unit of this item is now on your shopping cart',
-      timer: 800,
-      showConfirmButton:false,
-      icon: 'success',
-      position: "top-end",
-      customClass: {
-          popup: "swal-popup"
-      }
+    text: 'One unit of this item is now on your shopping cart',
+    timer: 800,
+    showConfirmButton:false,
+    icon: 'success',
+    position: "top-end",
+    customClass: {
+      popup: "swal-popup"
+    }
   })
 }
 
 let removeMessage = () => {
   Swal.fire({
-      text: 'One unit of this item has been removed from shopping cart',
-      timer: 800,
-      showConfirmButton:false,
-      icon: 'warning',
-      position: "top-end",
-      customClass: {
-          popup: "swal-popup"
-      }
+    text: 'One unit of this item has been removed from shopping cart',
+    timer: 800,
+    showConfirmButton:false,
+    icon: 'warning',
+    position: "top-end",
+    customClass: {
+      popup: "swal-popup"
+    }
   })
 }
 
 let zeroMessage = () => {
   Swal.fire({
-      text: 'All units of this item has been removed from shopping cart',
-      timer: 800,
-      showConfirmButton:false,
-      icon: 'error',
-      position: "top-end",
-      customClass: {
-          popup: "swal-popup"
-      }
+    text: 'All units of this item has been removed from shopping cart',
+    timer: 800,
+    showConfirmButton:false,
+    icon: 'error',
+    position: "top-end",
+    customClass: {
+      popup: "swal-popup"
+    }
   })
 }
 
 let emptyMessage = () => {
   Swal.fire({
-      text: 'Your shopping cart is now empty',
-      timer: 1400,
-      showConfirmButton:false,
-      icon: 'info',
-      position: "top-end",
-      customClass: {
-          popup: "swal-popup"
-      }
+    text: 'Your shopping cart is now empty',
+    timer: 1400,
+    showConfirmButton:false,
+    icon: 'info',
+    position: "top-end",
+    customClass: {
+      popup: "swal-popup"
+    }
   })
 }
 
 let checkOutMessage = () => {
   Swal.fire({
-      text: '✨Thanks for shopping with us✨',
-      timer: 2000,
-      showConfirmButton:false,
-      icon: 'success',
-      position: "top-end",
-      customClass: {
-          popup: "swal-popup"
-      }
+    text: '✨Thanks for shopping with us✨',
+    timer: 2000,
+    showConfirmButton:false,
+    icon: 'success',
+    position: "top-end",
+    customClass: {
+      popup: "swal-popup"
+    }
   })
 }
 
