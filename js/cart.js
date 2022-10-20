@@ -2,8 +2,8 @@
 
 // Declaring the cart variable that retrieves the items from memory
 let cart = JSON.parse(localStorage.getItem("cartMemory")) || [];
-console.log(cart);
-console.log(cart.lenght)
+let cartLenght = cart.map((element) => element.quantity).reduce((a, b) => a + b, 0);
+console.log(cartLenght)
 // Declaring the store variable where all items will be stored
 let storeItems = [];
 // Access to the section where all selected cards will be displayed   
@@ -19,33 +19,19 @@ let cartCount = () => {
 
 cartCount();
 
-console.log(cart)
 
-//Declaring the function to show all products as a card.
-async function fetchApi () {
+//Declaring the function to show all selected products as a card.
+let showCart = async () => {
+  let storeItems = []
   const dataApi = await fetch('https://fakestoreapi.com/products')
-  console.log(typeof dataApi);
   const dataJason = await dataApi.json()
   dataJason.map((element) => {
     storeItems.push(element)
   })
- showCart();
- totalPrice();
-}
-
-fetchApi();
-
-//Declaring the function to show all selected products as a card.
-let showCart = () => {
-  console.log(cart.lenght);
-  if(cart.lenght !==0) {
-    console.log(cart.lenght)
+  if(cartLenght !==0) {
     shoppingCart.innerHTML = cart.map((element)=> {
       let {quantity, id} = element;
       let search = storeItems.find((element) => element.id === id) || [];
-      console.log(storeItems);
-      console.log(typeof storeItems)
-      console.log(typeof storeItems[0])
       return `
       <div class="card rounded-3 mb-4">
         <div class="card-body p-4">
@@ -104,7 +90,11 @@ let showCart = () => {
 showCart();
 
 // Declaring the function to add products to the cart, validate if the object exists, and then chose to increase only the quantity if it does.
-let addProduct = (id) => {
+let addProduct = async (id) => {
+  let storeItems = []
+  const dataApi = await fetch(`https://fakestoreapi.com/products/${id}`)
+  const dataJason = await dataApi.json()
+  storeItems.push(dataJason)
   let selectedProduct = storeItems.find((element)=> element.id === id)
   let search = cart.find((element) => element.id === selectedProduct.id)
   if (search === undefined) {
@@ -118,13 +108,18 @@ let addProduct = (id) => {
       addMessage();
   }
   update(selectedProduct.id);
-  showCart();
-  totalPrice();
+  await showCart();
+  await totalPrice();
+  console.log(cartLenght)
   localStorage.setItem("cartMemory", JSON.stringify(cart))
 };
 
 // Declaring the function to remove products to the cart, validate if the object exists, and then chose to decrease the quantity if it does.
-let removeProduct = (id) => {
+let removeProduct = async (id) => {
+  let storeItems = []
+  const dataApi = await fetch(`https://fakestoreapi.com/products/${id}`)
+  const dataJason = await dataApi.json()
+  storeItems.push(dataJason)
   let selectedProduct = storeItems.find((element)=> element.id === id)
   let search = cart.find((element) => element.id === selectedProduct.id)
   if (search === undefined) return;
@@ -136,10 +131,12 @@ let removeProduct = (id) => {
   }
   update(selectedProduct.id);
   cart = cart.filter((element) => element.quantity !== 0);
-  showCart();
-  totalPrice();
+  await showCart();
+  await totalPrice();
   localStorage.setItem("cartMemory", JSON.stringify(cart));
+  console.log(cartLenght)
 };
+console.log(cartLenght)
 
 // Declaring the function to update the DOM and show all the quantities changes 
 let update = (id) => {
@@ -157,28 +154,35 @@ let eliminateProduct = (id) => {
   cartCount();
   zeroMessage()
   localStorage.setItem("cartMemory", JSON.stringify(cart));
+  console.log(cartLenght)
 };
+console.log(cartLenght)
 
 //Declaring the function to calculate and display the total of all cart items 
-let totalPrice = () => {
-  if (cart.lenght !== 0) {   
+let totalPrice = async () => {
+  let storeItems = []
+  const dataApi = await fetch('https://fakestoreapi.com/products')
+  const dataJason = await dataApi.json()
+  dataJason.map((element) => {
+    storeItems.push(element)
+  })
+  if (cartLenght !== 0) {   
     let price = cart.map ((element)=>{
       let {quantity, id} = element
       let search = storeItems.find((y) => y.id === id) || [];
       return quantity * search.price;
     }).reduce((a,b) => a + b, 0);
-    console.log(price);
-    // total.innerHTML = `
-    // <div class="card">
-    //   <div class="card-body row d-flex justify-content-center align-items-center text-center">
-    //     <h2>Total Price: $ ${price}</h2>
-    //   </div>
-    //   <div class="container d-flex justify-content-center align-items-center mb-4">
-    //     <button class="btn btn-outline-dark mt-auto btn-lg m-3" onclick="clearCart()">Clear Cart</button>
-    //     <button type="button" class="btn btn-warning btn-block btn-lg m-3" onclick="checkOutMessage()">Checkout</button>
-    //   </div>
-    // </div>
-    // `
+    total.innerHTML = `
+    <div class="card">
+      <div class="card-body row d-flex justify-content-center align-items-center text-center">
+        <h2>Total Price: $ ${price}</h2>
+      </div>
+      <div class="container d-flex justify-content-center align-items-center mb-4">
+        <button class="btn btn-outline-dark mt-auto btn-lg m-3" onclick="clearCart()">Clear Cart</button>
+        <button type="button" class="btn btn-warning btn-block btn-lg m-3" onclick="checkOutMessage()">Checkout</button>
+      </div>
+    </div>
+    `
   } 
 
 };
@@ -188,17 +192,20 @@ totalPrice();
 //Declaring the function to empty the cart 
 let clearCart = () => {
   cart = [];
+  localStorage.setItem("cartMemory", JSON.stringify(cart));
   showCart();
   totalPrice();
   cartCount();
   emptyMessage();
-  localStorage.setItem("cartMemory", JSON.stringify(cart));
+  console.log(cartLenght)
 }
+
+console.log(cartLenght)
 
 //Declaring the function to sort the cart items by price in descending order   
 let xxx = storeItems.sort((a,b) => a.price - b.price);
 
-console.log(storeItems)
+
 
 // let sortPrice = () => {
 

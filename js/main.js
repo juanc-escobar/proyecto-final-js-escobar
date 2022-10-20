@@ -4,24 +4,20 @@
 let storeItems = [];
 // Declaring the cart variable that retrieves the items from memory 
 let cart = JSON.parse(localStorage.getItem("cartMemory")) || [];
-console.log(cart);
-console.log(cart.lenght)
 // Access to the section where all cards will be displayed  
 const cardContainer = document.getElementById("card-container");
 //Fetch to the fake store API, transform to JSON and push the items to the store array
-async function fetchApi() {
-    const dataApi = await fetch('https://fakestoreapi.com/products')
-    const dataJason = await dataApi.json()
-    dataJason.map((element) => {
-        storeItems.push(element)
-    })
-    showProducts();
-}
+const apiUrl = "https://fakestoreapi.com/products"
 
-fetchApi();
 
 //Declaring the function to show all products as a card.
-let showProducts = () => {
+let showProducts = async (apiUrl) => {
+    let storeItems = []
+    const dataApi = await fetch(`${apiUrl}`)
+    const dataJason = await dataApi.json()
+    dataJason.map((element) => {
+    storeItems.push(element)
+    })
     cardContainer.innerHTML = storeItems.map((element) => {
         let { image, title, price, id } = element;
         let search = cart.find((element) => element.id === id) || [];
@@ -55,11 +51,16 @@ let showProducts = () => {
             </div>
         `
     }).join("")
-
 }
 
+showProducts(apiUrl);
+
 // Declaring the function to add products to the cart, validate if the object exists, and then chose to increase only the quantity if it does.
-let addProduct = (id) => {
+let addProduct = async (id) => {
+    let storeItems = []
+    const dataApi = await fetch(`https://fakestoreapi.com/products/${id}`)
+    const dataJason = await dataApi.json()
+    storeItems.push(dataJason)
     let selectedProduct = storeItems.find((element) => element.id === id)
     let search = cart.find((element) => element.id === selectedProduct.id)
     if (search === undefined) {
@@ -77,7 +78,11 @@ let addProduct = (id) => {
 };
 
 // Declaring the function to remove products to the cart, validate if the object exists, and then chose to decrease the quantity if it does.
-let removeProduct = (id) => {
+let removeProduct = async (id) => {
+    let storeItems = []
+    const dataApi = await fetch(`https://fakestoreapi.com/products/${id}`)
+    const dataJason = await dataApi.json()
+    storeItems.push(dataJason)
     let selectedProduct = storeItems.find((element) => element.id === id)
     let search = cart.find((element) => element.id === selectedProduct.id)
     if (search === undefined) return zeroMessage();
@@ -114,46 +119,17 @@ const menCategory = document.getElementById("men")
 const womenCategory = document.getElementById("women")
 const jeweleryCategory = document.getElementById("jewelery")
 const electronicsCategory = document.getElementById("electronics")
+const menUrl = "https://fakestoreapi.com/products/category/men's clothing"
+const womenUrl = "https://fakestoreapi.com/products/category/women's clothing"
+const jeweleryUrl = "https://fakestoreapi.com/products/category/jewelery"
+const electronicsUrl = "https://fakestoreapi.com/products/category/electronics"
 
-menCategory.onclick = async () => {
-    const productsData = await fetch(`https://fakestoreapi.com/products/category/men's clothing`)
-    const products = await productsData.json()
-    storeItems = [];
-    products.map((element) => {
-        storeItems.push(element)
-    })
-    showProducts(products)
-}
 
-womenCategory.onclick = async () => {
-    const productsData = await fetch(`https://fakestoreapi.com/products/category/women's clothing`)
-    const products = await productsData.json()
-    storeItems = [];
-    products.map((element) => {
-        storeItems.push(element)
-    })
-    showProducts(products)
-}
 
-jeweleryCategory.onclick = async () => {
-    const productsData = await fetch(`https://fakestoreapi.com/products/category/jewelery`)
-    const products = await productsData.json()
-    storeItems = [];
-    products.map((element) => {
-        storeItems.push(element)
-    })
-    showProducts(products)
-}
-
-electronicsCategory.onclick = async () => {
-    const productsData = await fetch(`https://fakestoreapi.com/products/category/electronics`)
-    const products = await productsData.json()
-    storeItems = [];
-    products.map((element) => {
-        storeItems.push(element)
-    })
-    showProducts(products)
-}
+menCategory.onclick = () => {showProducts(menUrl)};
+womenCategory.onclick = () => {showProducts(womenUrl);} 
+jeweleryCategory.onclick = () => {showProducts(jeweleryUrl)};
+electronicsCategory.onclick = () => {showProducts(electronicsUrl)};
 
 
 //  -------------------------------------------SWEET ALERT MESSAGES--------------------------------------------//
