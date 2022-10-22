@@ -1,23 +1,26 @@
 // --------------------------------------------CORE LOGIC--------------------------------------------//
-
-// Declaring the store variable where all items will be stored  
-let storeItems = [];
+ 
 // Declaring the cart variable that retrieves the items from memory 
 let cart = JSON.parse(localStorage.getItem("cartMemory")) || [];
 // Access to the section where all cards will be displayed  
 const cardContainer = document.getElementById("card-container");
-//Fetch to the fake store API, transform to JSON and push the items to the store array
+// Declaring a constant that contains the URL of the API 
 const apiUrl = "https://fakestoreapi.com/products"
 
-
-//Declaring the function to show all products as a card.
-let showProducts = async (apiUrl) => {
+//Declaring a function to call the API and fetch all the products. 
+let callAllProducts = async (apiUrl) => {
     let storeItems = []
     const dataApi = await fetch(`${apiUrl}`)
     const dataJason = await dataApi.json()
     dataJason.map((element) => {
     storeItems.push(element)
     })
+    return storeItems;
+}
+
+//Declaring the function to show all products as a card.
+let showProducts = async (apiUrl) => {
+    let storeItems = await callAllProducts (apiUrl);
     cardContainer.innerHTML = storeItems.map((element) => {
         let { image, title, price, id } = element;
         let search = cart.find((element) => element.id === id) || [];
@@ -55,18 +58,25 @@ let showProducts = async (apiUrl) => {
 
 showProducts(apiUrl);
 
-// Declaring the function to add products to the cart, validate if the object exists, and then chose to increase only the quantity if it does.
-let addProduct = async (id) => {
+//Declaring the function to fetch the selected product.
+let callProduct = async (id) => {
     let storeItems = []
     const dataApi = await fetch(`https://fakestoreapi.com/products/${id}`)
     const dataJason = await dataApi.json()
     storeItems.push(dataJason)
+    return storeItems
+}
+
+// Declaring the function to add products to the cart, validate if the object exists, and then chose to increase only the quantity if it does.
+let addProduct = async (id) => {
+    let storeItems = await callProduct (id);
     let selectedProduct = storeItems.find((element) => element.id === id)
     let search = cart.find((element) => element.id === selectedProduct.id)
     if (search === undefined) {
         cart.push({
             id: selectedProduct.id,
             quantity: 1,
+            price: selectedProduct.price,
         });
         addMessage();
     } else {
@@ -79,10 +89,7 @@ let addProduct = async (id) => {
 
 // Declaring the function to remove products to the cart, validate if the object exists, and then chose to decrease the quantity if it does.
 let removeProduct = async (id) => {
-    let storeItems = []
-    const dataApi = await fetch(`https://fakestoreapi.com/products/${id}`)
-    const dataJason = await dataApi.json()
-    storeItems.push(dataJason)
+    let storeItems = await callProduct (id);
     let selectedProduct = storeItems.find((element) => element.id === id)
     let search = cart.find((element) => element.id === selectedProduct.id)
     if (search === undefined) return zeroMessage();
@@ -97,7 +104,7 @@ let removeProduct = async (id) => {
     localStorage.setItem("cartMemory", JSON.stringify(cart));
 };
 
-// Declaring the function to update the DOM and show all the quantities changes 
+// Declaring the function to update the DOM and show all the quantity changes 
 let update = (id) => {
     let search = cart.find((element) => element.id === id)
     document.getElementById(id).innerHTML = search.quantity;
@@ -112,7 +119,6 @@ let cartCount = () => {
 
 cartCount();
 
-
 //  -------------------------------------------DISPLAY BY CATEGORY--------------------------------------------//
 
 const menCategory = document.getElementById("men")
@@ -124,16 +130,24 @@ const womenUrl = "https://fakestoreapi.com/products/category/women's clothing"
 const jeweleryUrl = "https://fakestoreapi.com/products/category/jewelery"
 const electronicsUrl = "https://fakestoreapi.com/products/category/electronics"
 
-
-
-menCategory.onclick = () => {showProducts(menUrl)};
-womenCategory.onclick = () => {showProducts(womenUrl);} 
-jeweleryCategory.onclick = () => {showProducts(jeweleryUrl)};
-electronicsCategory.onclick = () => {showProducts(electronicsUrl)};
-
+menCategory.onclick = () => {
+    callAllProducts(menUrl);
+    showProducts(menUrl);
+};
+womenCategory.onclick = () => {
+    callAllProducts(womenUrl);
+    showProducts(womenUrl);
+} 
+jeweleryCategory.onclick = () => {
+    callAllProducts(jeweleryUrl)
+    showProducts(jeweleryUrl);
+};
+electronicsCategory.onclick = () => {
+    callAllProducts(electronicsUrl)
+    showProducts(electronicsUrl);
+};
 
 //  -------------------------------------------SWEET ALERT MESSAGES--------------------------------------------//
-
 
 let addMessage = () => {
     Swal.fire({
@@ -173,4 +187,3 @@ let zeroMessage = () => {
         }
     })
 }
-
